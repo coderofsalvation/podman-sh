@@ -42,5 +42,5 @@ init(){    ... }
 adduser(){ ... }          # lets root add users
 ```
 
-<img src="https://raw.githubusercontent.com/coderofsalvation/podmanr/main/.dtp/diagram.jpg"/>
+<img src="https://raw.githubusercontent.com/coderofsalvation/podmanr/main/.dtp/diagram.gif"/>
 
