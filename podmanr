@@ -2,27 +2,26 @@
 set -e
 trap '' 2  # disable ctrl-c
 image=alpine:3.16 
-podman=$podman
-#podman=docker # uncomment this if you use docker
 
-shell(){ exec $podman exec -it -w /root $(whoami) /bin/sh "$@"; }
+shell(){ exec podman exec -it -w /root $image /bin/sh "$@"; }
 
 build(){
   test -f Dockerfile || return 0
   test "$(md5sum Dockerfile)" = "$(cat .build)" && return 0
   md5sum Dockerfile > .build
-  echo "AVAILABLE PODMAN IMAGES:"; $podman images
+  echo "AVAILABLE PODMAN IMAGES:"; podman images
   set +e # jump into default image if build fails
-  $podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && {
+  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && {
      image=$(whoami)
-     $podman rm -f $(whoami)
-     $podman run --name=$(whoami) -v /home/$(whoami):/root -d $image tail -f /dev/random && shell "$@"
+     podman rm -f $(whoami)
+     podman run --name=$(whoami) -v /home/$(whoami):/root -d $image tail -f /dev/random
   }
 }
 
 init(){
   build "$@"
-  $podman ps -f name=$(whoami) | grep $(whoami) 1>/dev/null 2>/dev/null && shell "$@"
+  podman ps -f name=$(whoami) | grep $(whoami) 1>/dev/null 2>/dev/null && image=$(whoami)
+  shell "$@"
 }
 
 adduser(){
@@ -30,9 +29,9 @@ adduser(){
   storageconf=/home/$user/.config/containers/storage.conf
   test $(whoami) = root || { echo "[!] please run this as root"; exit 1; }
   grep $user /etc/passwd || {
-    addgroup $user && adduser $user -G $user -h /home/$user -D
+    addgroup $user && adduser $user -G $user -h /home/$user -D	
     echo "$user:$user" | chpasswd
-    sed -i 's|$user.*|$user:x:1000:1000:Linux User,:/home/$user:/usr/bin/$podmanr|g' /etc/passwd
+    sed -i 's|$user.*|$user:x:1000:1000:Linux User,:/home/$user:/usr/bin/podmanr|g' /etc/passwd
   }
   usermod --add-subuids 10000-75535 $user
   usermod --add-subgids 10000-75535 $user
