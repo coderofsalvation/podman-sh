@@ -1,7 +1,7 @@
 Easily redirect regular *nix users to podman containers using a tiny shellscript:
 
 ```shell
-erver # wget https://.../podmanr -O /usr/bin/podmanr
+server # wget https://raw.githubusercontent.com/coderofsalvation/podmanr/main/podmanr -O /usr/bin/podmanr
 server # chmod +x /usr/bin/podmanr
 server # podmanr adduser john
 ```
