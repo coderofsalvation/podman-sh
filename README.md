@@ -1,4 +1,4 @@
-Easily redirect (ssh) users to podman containers using a tiny shellscript:
+Easily redirect (ssh) users to podman/docker containers using a tiny shellscript:
 
 ```shell
 server # wget https://raw.githubusercontent.com/coderofsalvation/podmanr/main/podmanr -O /usr/bin/podmanr
@@ -58,3 +58,14 @@ abe68768baeb8                    <---- our own custom container!
   * create `/home/username/root`
   * modify podmanr to launch `podman run` with `-v /home/$(whoami)/root:/root` and/or `--cpus = $(cat .cpus)` e.g. 
   * this uses (and hides) files/configuration-files in `/home/username/*` for the user (which operates inside `/home/username/root`)
+
+## Troubleshooting
+
+```
+# su -l -s /bin/sh myuser                # simulate ssh login to container
+$                                        # to trigger Dockerfile build e.g.
+
+# su -l -s /bin/sh myuser                # jump into normal shell
+$
+
+```
