@@ -26,6 +26,8 @@ init(){    ... }
 adduser(){ ... }          # lets root add users
 ```
 
+> Bonus: images in `/var/lib/containers` are shared. Which means that root can make/pull images and make them available to users (which see them in the list of available images when `Dockerfile` is being build (or run `cat ~/.images`))
+
 #### Full demo 
 
 ```shell
