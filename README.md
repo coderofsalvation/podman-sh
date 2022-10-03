@@ -1,4 +1,4 @@
-Easily redirect regular *nix users to podman containers using a tiny shellscript:
+Easily redirect (ssh) users to podman containers using a tiny shellscript:
 
 ```shell
 server # wget https://raw.githubusercontent.com/coderofsalvation/podmanr/main/podmanr -O /usr/bin/podmanr
@@ -12,9 +12,28 @@ john:x:1000:1000:human:/home/john:/usr/bin/podmanr
 
 ## How does it work?
 
+<img src="https://raw.githubusercontent.com/coderofsalvation/podmanr/main/.dtp/diagram.gif"/>
+
 > basically: install podman and set the `podmanr` shellscript as the user shell
 
+Let's take a look at what the (highly hackable) shellscript boils down to:
+
+```
+image=alpine:3.16         # default image for users without Dockerfile in homedir
+shell(){   ... }          # the actual usershell
+build(){   ... }          # builds user $HOME/Dockerfile (if present)
+init(){    ... }          
+adduser(){ ... }          # lets root add users
+```
+
+#### Full demo 
+
 ```shell
+server # wget https://raw.githubusercontent.com/coderofsalvation/podmanr/main/podmanr -O /usr/bin/podmanr
+server # chmod +x /usr/bin/podmanr
+server # podmanr adduser john
+server # grep john /etc/passwd
+john:x:1000:1000:human:/home/john:/usr/bin/podmanr
 server # hostname
 server
 
@@ -29,18 +48,3 @@ laptop $ ssh john@server
 / # hostname
 abe68768baeb8                    <---- our own custom container!
 ```
-
-## Explanation
-
-Let's take a look at the (highly hackable) shellscript:
-
-```
-image=alpine:3.16         # default image for users without Dockerfile in homedir
-shell(){   ... }          # the actual usershell
-build(){   ... }          # builds user $HOME/Dockerfile (if present)
-init(){    ... }          
-adduser(){ ... }          # lets root add users
-```
-
-<img src="https://raw.githubusercontent.com/coderofsalvation/podmanr/main/.dtp/diagram.gif"/>
-
