@@ -78,6 +78,6 @@ docker.io/library/debian  woodwork    9c6f07244728  7 weeks ago  5.83 MB     tru
 $                           # to trigger Dockerfile build e.g.
 
 # su -l -s /bin/sh myuser   # jump into normal shell
-$
+$                           # to inspect, run 'podman ps' 'podman images' e.g.
 
 ```
