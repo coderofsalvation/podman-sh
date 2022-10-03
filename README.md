@@ -4,6 +4,8 @@ Easily redirect regular *nix users to podman containers using a tiny shellscript
 server # wget https://raw.githubusercontent.com/coderofsalvation/podmanr/main/podmanr -O /usr/bin/podmanr
 server # chmod +x /usr/bin/podmanr
 server # podmanr adduser john
+server # grep john /etc/passwd
+john:x:1000:1000:human:/home/john:/usr/bin/podmanr
 ```
 
 > PROFIT!
@@ -13,8 +15,6 @@ server # podmanr adduser john
 > basically: install podman and set the `podmanr` shellscript as the user shell
 
 ```shell
-server # grep john /etc/passwd
-john:x:1000:1000:human:/home/john:/usr/bin/podmanr
 server # hostname
 server
 
@@ -42,4 +42,5 @@ init(){    ... }
 adduser(){ ... }          # lets root add users
 ```
 
-<img src=".dtp/diagram.jpg"/>
+<img src="https://raw.githubusercontent.com/coderofsalvation/podmanr/main/.dtp/diagram.jpg"/>
+
