@@ -50,3 +50,11 @@ laptop $ ssh john@server
 / # hostname
 abe68768baeb8                    <---- our own custom container!
 ```
+
+## Customization ideas 
+
+* freeze Dockerfile: `chown root:root /home/someuser/Dockerfile && chmod 744 /home/someuser/Dockerfile`
+* apply limits & introduce extra settings:  
+  * create `/home/username/root`
+  * modify podmanr to launch `podman run` with `-v /home/$(whoami)/root:/root` and/or `--cpus = $(cat .cpus)` e.g. 
+  * this uses (and hides) files/configuration-files in `/home/username/*` for the user (which operates inside `/home/username/root`)
