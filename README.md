@@ -63,6 +63,8 @@ REPOSITORY                TAG         IMAGE ID      CREATED      SIZE        R/O
 docker.io/library/debian  woodwork    9c6f07244728  7 weeks ago  5.83 MB     true
 ```
 
+> NOTE: you can also run `podmanr pull <the_image>` which is an alias for the above cmds
+
 ## Customization ideas 
 
 * freeze Dockerfile: `chown root:root /home/someuser/Dockerfile && chmod 744 /home/someuser/Dockerfile`
