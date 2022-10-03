@@ -81,3 +81,6 @@ $                           # to trigger Dockerfile build e.g.
 $                           # to inspect, run 'podman ps' 'podman images' e.g.
 
 ```
+
+> NOTE: Rootless podman can be tricky to setup (configuring overlay e.g.), here are some [installation notes](.overlay-notes) for alpine linux on a VPS.
+

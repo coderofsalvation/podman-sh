@@ -4,7 +4,7 @@ trap '' 2  # disable ctrl-c
 try(){ set +e; "$@"; set -e; }
 image=alpine:3.16.2
 
-shell(){ exec podman exec -it -w /root $image /bin/sh "$@"; }
+shell(){ exec podman exec -it -w /root $(whoami) /bin/sh "$@"; }
 
 build(){
   test -f Dockerfile || return 0
@@ -12,17 +12,22 @@ build(){
   md5sum Dockerfile > .build
   echo "AVAILABLE PODMAN IMAGES:"; podman images
   set +e # jump into default image if build fails
-  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && {
-     image=$(whoami)
-     podman rm -f $(whoami)
-     podman run --name=$(whoami) -v /home/$(whoami):/root -d $image tail -f /dev/random
-  }
+  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && image=$(whoami)
 }
 
 init(){
   build "$@"
-  podman ps -f name=$(whoami) | grep $(whoami) 1>/dev/null 2>/dev/null && image=$(whoami)
+  podman ps -f name=$(whoami) | grep $(whoami) 1>/dev/null 2>/dev/null || {
+    try podman rm -f $(whoami) 2>/dev/null
+    podman run --name=$(whoami) -v /home/$(whoami):/root -v $(pwd)/.motd:/etc/motd -d $image tail -f /dev/random
+  }
   shell "$@"
+}
+
+pull(){
+  podman --root /var/lib/containers pull $1
+  chmod -R a+rx /var/lib/containers
+  exit
 }
 
 adduser(){
@@ -33,26 +38,29 @@ adduser(){
     try addgroup $user
     $(which adduser) -h /home/$user -D -G $user $user
     echo "$user:$user" | chpasswd
+    cp /etc/motd /home/$user/.motd 
     sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' /etc/passwd  # change loginshell to podmanr
   }
   usermod --add-subuids 10000-75535 $user
   usermod --add-subgids 10000-75535 $user
   test -f $storageconf || {
     mkdir -p $(dirname $storageconf)
-    { 
-       echo '[storage]'; 
-       grep "driver =" /etc/containers/storage.conf
-       echo -e '[storage.options]\nadditionalimagestores = [ "/var/lib/containers", ]' 
-    } >> $storageconf 
+    echo '[storage]
+driver = "overlay"
+[storage.options]
+additionalimagestores = [ "/var/lib/containers" ]
+[storage.options.overlay]
+mount_program = "/usr/bin/fuse-overlayfs"' > $storageconf
     chown -R $user:$user /home/$user/.config 
+    chown root:root $storageconf && chmod 600 $storageconf 
     test -f /var/lib/containers/overlay-images/images.lock || {
       mkdir -p /var/lib/containers/overlay-images /var/lib/containers/overlay-layers
       touch /var/lib/containers/overlay-images/images.lock /var/lib/containers/overlay-layers/layers.lock
     }
-    chmod -R a+rx /var/lib/containers
   }
   exit 0
 }
 
 test "$1 " = "adduser " && "$@"
+test "$1 " = "pull "    && "$@"
 init "$@"

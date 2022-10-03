@@ -1,0 +1,28 @@
+setup-alpine
+mkdir .ssh
+touch .ssh/authorized_keys
+chmod 600 .ssh/authorized_keys
+chmod 700 .ssh
+echo "http://eu.edge.kernel.org/alpine/v3.16/community" >> /etc/apk/repositories
+apk upgrade; apk add podman runc slirp4netns fuse-overlayfs shadow util-linux
+# setup rootless podman (cgroups, runc)
+sed -i 's|#runtime = "crun"|runtime = "runc"|g' /etc/containers/containers.conf 
+echo -e "[storage.options]\nmount_program = \"/usr/bin/fuse-overlayfs\"" >> /etc/containers/storage.conf
+mount --make-rshared /
+echo "mount --make-rshared /" > /etc/local.d/sharedroot.start
+chmod 755 /etc/local.d/sharedroot.start
+rc-update add cgroups
+echo 'rc_cgroup_mode="hybrid"' >> /etc/rc.conf
+echo 'user_allow_other' >> /etc/fuse.conf
+podman system migrate
+# create user
+export user=john
+addgroup $user && adduser $user -G $user -h /home/$user -D
+echo "$user:$user" | chpasswd
+usermod --add-subuids 10000-75535 $user
+usermod --add-subgids 10000-75535 $user
+podman system migrate
+su $user -c 'podman system migrate'
+sed -i 's|john.*|john:x:1000:1000:Linux User,:/home/john:/usr/bin/podmanr|g' /etc/passwd
+echo tun >> /etc/modules
+modprobe tun
