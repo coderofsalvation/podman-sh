@@ -26,8 +26,6 @@ init(){    ... }
 adduser(){ ... }          # lets root add users
 ```
 
-> Bonus: images in `/var/lib/containers` are shared. Which means that root can make/pull images and make them available to users (which see them in the list of available images when `Dockerfile` is being build (or run `cat ~/.images`))
-
 #### Full demo 
 
 ```shell
@@ -51,6 +49,20 @@ laptop $ ssh john@server
 abe68768baeb8                    <---- our own custom container!
 ```
 
+## Share/Expose images to users
+
+Normally rootless containers are based on images pulled by the user, however podmanr-users can list images 
+from an additional (shared) store:
+
+```shell 
+# podman --root /var/lib/containers pull debian:bookworm 
+# chmod -R a+rx /var/lib/containers
+# su -l -c /bin/sh myuser             # fake ssh login to container
+$ podman images
+REPOSITORY                TAG         IMAGE ID      CREATED      SIZE        R/O
+docker.io/library/debian  woodwork    9c6f07244728  7 weeks ago  5.83 MB     true
+```
+
 ## Customization ideas 
 
 * freeze Dockerfile: `chown root:root /home/someuser/Dockerfile && chmod 744 /home/someuser/Dockerfile`
@@ -62,10 +74,10 @@ abe68768baeb8                    <---- our own custom container!
 ## Troubleshooting
 
 ```
-# su -l -s /bin/sh myuser                # simulate ssh login to container
-$                                        # to trigger Dockerfile build e.g.
+# su -l  myuser             # fake ssh login to container
+$                           # to trigger Dockerfile build e.g.
 
-# su -l -s /bin/sh myuser                # jump into normal shell
+# su -l -s /bin/sh myuser   # jump into normal shell
 $
 
 ```
