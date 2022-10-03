@@ -10,6 +10,9 @@ server # podmanr adduser john
 
 ## How does it work?
 
+> basically: install podman and set the `podmanr` shellscript as the user shell
+
+```shell
 server # grep john /etc/passwd
 john:x:1000:1000:human:/home/john:/usr/bin/podmanr
 server # hostname
@@ -28,8 +31,6 @@ abe68768baeb8                    <---- our own custom container!
 ```
 
 ## Explanation
-
-> Simple: by installing podman and setting the `podmanr` shellscript as the user shell
 
 Let's take a look at the (highly hackable) shellscript:
 
