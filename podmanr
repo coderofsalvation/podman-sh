@@ -33,7 +33,7 @@ adduser(){
     try addgroup $user
     $(which adduser) -h /home/$user -D -G $user $user
     echo "$user:$user" | chpasswd
-    sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' # change loginshell to podmanr
+    sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' /etc/passwd  # change loginshell to podmanr
   }
   usermod --add-subuids 10000-75535 $user
   usermod --add-subgids 10000-75535 $user
