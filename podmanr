@@ -1,7 +1,8 @@
 #!/bin/sh
 set -e
 trap '' 2  # disable ctrl-c
-image=alpine:3.16 
+try(){ set +e; "$@"; set -e; }
+image=alpine:3.16.2
 
 shell(){ exec podman exec -it -w /root $image /bin/sh "$@"; }
 
@@ -29,7 +30,8 @@ adduser(){
   storageconf=/home/$user/.config/containers/storage.conf
   test $(whoami) = root || { echo "[!] please run this as root"; exit 1; }
   grep $user /etc/passwd || {
-    addgroup $user && adduser $user -G $user -h /home/$user -D	
+    try addgroup $user
+    $(which adduser) -h /home/$user -D -G $user $user
     echo "$user:$user" | chpasswd
     sed -i 's|$user.*|$user:x:1000:1000:Linux User,:/home/$user:/usr/bin/podmanr|g' /etc/passwd
   }
