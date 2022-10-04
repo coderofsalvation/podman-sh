@@ -12,17 +12,21 @@ mount --make-rshared /
 echo "mount --make-rshared /" > /etc/local.d/sharedroot.start
 chmod 755 /etc/local.d/sharedroot.start
 rc-update add cgroups
-echo 'rc_cgroup_mode="hybrid"' >> /etc/rc.conf
+echo 'rc_cgroup_mode="unified"' >> /etc/rc.conf
+echo 'rc_controller_groups="YES"' >> /etc/rc.conf 
+echo 'rc_cgroup_controllers="cpuset cpu io memory hugetlb pids"' >> /etc/rc.conf 
 echo 'user_allow_other' >> /etc/fuse.conf
 podman system migrate
 # create user
-export user=john
+export user=2wa
 addgroup $user && adduser $user -G $user -h /home/$user -D
 echo "$user:$user" | chpasswd
 usermod --add-subuids 10000-75535 $user
 usermod --add-subgids 10000-75535 $user
 podman system migrate
 su $user -c 'podman system migrate'
-sed -i 's|john.*|john:x:1000:1000:Linux User,:/home/john:/usr/bin/podmanr|g' /etc/passwd
+sed -i 's|2wa.*|2wa:x:1000:1000:Linux User,:/home/2wa:/usr/bin/podmanr|g' /etc/passwd
 echo tun >> /etc/modules
 modprobe tun
+sed -i 's|\(default_kernel_opts\)="\(.*\)"|\1="\2 cgroup_enable=memory swapaccount=1"|g' /etc/update-extlinux.conf
+update-extlinux
