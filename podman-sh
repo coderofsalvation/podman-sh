@@ -3,7 +3,6 @@ set -e
 trap '' 2  # disable ctrl-c
 try(){ set +e; "$@"; set -e; }
 image=alpine:3.16.2
-group=users
 cfg_container='[storage]
 driver = "overlay"
 [storage.options]
@@ -46,8 +45,8 @@ adduser(){
   storageconf=/home/$user/.config/containers/storage.conf
   test $(whoami) = root || { echo "[!] please run this as root"; exit 1; }
   grep $user /etc/passwd || {
-    try addgroup $group
-    $(which adduser) -h /home/$user -D -G $group $user
+    try addgroup $user
+    $(which adduser) -h /home/$user -D -G $user $user
     echo "$user:$user" | chpasswd
     cp /etc/motd /home/$user/.motd 
     sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' /etc/passwd  # change loginshell to podmanr
@@ -57,7 +56,7 @@ adduser(){
   test -f $storageconf || {
     mkdir -p $(dirname $storageconf)
     echo "$cfg_container" > $storageconf
-    chown -R $user:$group /home/$user/.config 
+    chown -R $user:$user /home/$user/.config 
     chown root:root $storageconf && chmod 600 $storageconf 
     test -f /var/lib/containers/overlay-images/images.lock || {
       mkdir -p /var/lib/containers/overlay-images /var/lib/containers/overlay-layers
