@@ -45,10 +45,11 @@ adduser(){
   storageconf=/home/$user/.config/containers/storage.conf
   test $(whoami) = root || { echo "[!] please run this as root"; exit 1; }
   grep $user /etc/passwd || {
-    try addgroup $user
-    $(which adduser) -h /home/$user -D -G $user $user
+    #try addgroup $user
+    $(which adduser) -h /home/$user $user
     echo "$user:$user" | chpasswd
     cp /etc/motd /home/$user/.motd 
+    which loginctl && loginctl enable-linger $user
     sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' /etc/passwd  # change loginshell to podmanr
   }
   usermod --add-subuids 10000-75535 $user
