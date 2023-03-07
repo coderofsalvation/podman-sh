@@ -41,14 +41,14 @@ server
 
 laptop $ ssh john@server
 / # hostname
-jfe2jfe3ac87298                  <---- we're in default container!
+jfe2jfe3ac87298                           # <-- we're in default container!
 
-/ # echo "FROM alpine:3.16" > Dockerfile
+/ # echo "FROM alpine:3.16" > Dockerfile  # update file to trigger build
 / # exit
 
 laptop $ ssh john@server
 / # hostname
-abe68768baeb8                    <---- our own custom container!
+abe68768baeb8                              # <-- our own custom container!
 ```
 
 ## Share/Expose images to users

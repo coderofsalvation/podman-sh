@@ -18,7 +18,7 @@ shell(){
 
 build(){
   test -f Dockerfile || return 0
-  test "$(md5sum Dockerfile)" = "$(cat .build)" && return 0
+  test -f .build && test "$(md5sum Dockerfile)" = "$(cat .build)" && return 0
   md5sum Dockerfile > .build
   echo "AVAILABLE PODMAN IMAGES:"; podman images
   set +e # jump into default image if build fails
