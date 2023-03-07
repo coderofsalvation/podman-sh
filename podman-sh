@@ -18,6 +18,7 @@ shell(){
 
 build(){
   test -f Dockerfile || return 0
+  podman images | grep localhost/$(whoami) && image=$(whoami)
   test -f .build && test "$(md5sum Dockerfile)" = "$(cat .build)" && return 0
   md5sum Dockerfile > .build
   echo "AVAILABLE PODMAN IMAGES:"; podman images
