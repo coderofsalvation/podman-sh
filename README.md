@@ -69,6 +69,7 @@ docker.io/library/debian  woodwork    9c6f07244728  7 weeks ago  5.83 MB     tru
 
 ## Customization ideas 
 
+* put a `.boot` shellscript in a homedir to override the `podman run` command when logging in
 * freeze Dockerfile: `chown root:root /home/someuser/Dockerfile && chmod 744 /home/someuser/Dockerfile`
 * apply limits & introduce extra settings:  
   * create `/home/username/root`
