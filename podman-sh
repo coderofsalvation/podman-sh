@@ -13,8 +13,8 @@ mount_program = "/usr/bin/fuse-overlayfs"
 '
 
 shell(){ 
-  [ ! -t 0 ] && cat | podman exec -i  -w /root $(whoami) /bin/sh "$@";  # scp etc.
-  [   -t 0 ] &&       podman exec -it -w /root $(whoami) /bin/sh "$@";  # interactive shell
+  [ -t 0 ] && t=t # respect interactive mode
+  podman exec -i${t}  -w /root $(whoami) /bin/sh "$@";  
 }
 
 build(){
