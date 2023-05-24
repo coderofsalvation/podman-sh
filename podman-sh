@@ -24,7 +24,7 @@ build(){
   md5sum Dockerfile > .build
   echo "AVAILABLE PODMAN IMAGES:"; podman images
   set +e # jump into default image if build fails
-  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && image=$(whoami)
+  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && image=$(whoami) && podman rm -f $(whoami) 2>/dev/null
 }
 
 init(){
