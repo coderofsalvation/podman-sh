@@ -67,6 +67,7 @@ adduser(){
       touch /var/lib/containers/overlay-images/images.lock /var/lib/containers/overlay-layers/layers.lock
     }
   }
+  mount --make-rshared / # https://github.com/containers/buildah/issues/3726
   exit 0
 }
 
