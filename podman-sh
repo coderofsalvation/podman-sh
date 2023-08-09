@@ -53,7 +53,7 @@ adduser(){
     echo "$user:$user" | chpasswd
     cp /etc/motd /home/$user/.motd 
     which loginctl && loginctl enable-linger $user
-    sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podmanr|g' /etc/passwd  # change loginshell to podmanr
+    sed -i 's|^\('$user'\):\(.*\):\(.*\)|\1:\2:/usr/bin/podman-sh|g' /etc/passwd  # change loginshell to podman-sh
   }
   usermod --add-subuids 10000-75535 $user
   usermod --add-subgids 10000-75535 $user
