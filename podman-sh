@@ -4,6 +4,7 @@ trap '' 2  # disable ctrl-c
 try(){ set +e; "$@"; set -e; }
 image=alpine:3.16.2
 imagecmd="tail -f /dev/random"
+cfgfile=.config/containers/config
 cfg_container='[storage]
 driver = "overlay"
 [storage.options]
@@ -24,12 +25,13 @@ build(){
   md5sum Dockerfile > .build
   echo "AVAILABLE PODMAN IMAGES:"; podman images
   set +e # jump into default image if build fails
-  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && image=$(whoami) && podman rm -f $(whoami) 2>/dev/null
+  podman build --build-arg UID=$(id -u) --layers -t $(whoami) . && try image=$(whoami) && podman rm -f $(whoami) 2>/dev/null
 }
 
 init(){
+  test -f $cfgfile  && . $cfgfile
   build "$@"
-  podman ps -f name=$(whoami) | grep $(whoami) 1>/dev/null 2>/dev/null || {
+  podman ps -f name=$(whoami) | grep $(whoami)'$' 1>/dev/null 2>/dev/null || {
     try podman rm -f $(whoami) 2>/dev/null
     test -f .boot && ./.boot
     test -f .boot || podman run --name=$(whoami) -v /home/$(whoami):/root -v $(pwd)/.motd:/etc/motd -d $image ${imagecmd}
